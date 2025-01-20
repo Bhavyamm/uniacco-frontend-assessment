@@ -12,9 +12,12 @@ import {
 import FilterProducts from "./FilterProducts";
 import SortProducts from "./SortProducts";
 import Pagination from "./Pagination";
+import { API_URL } from "@/constants";
+import SearchBar from "./SearchBar";
 
 const ProductList = () => {
   const { products } = useAppSelector((state) => state);
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const totalPages = Math.ceil(
@@ -24,7 +27,7 @@ const ProductList = () => {
 
   const fetchProducts = async () => {
     try {
-      const data = await fetch("https://fakestoreapi.com/products");
+      const data = await fetch(API_URL);
       const res: Product[] = await data.json();
 
       const updatedProducts: Product[] = res.map((item: Product) => ({
@@ -86,6 +89,24 @@ const ProductList = () => {
     setCurrentPage(page);
   };
 
+  const handleProductSearch = () => {
+    const query = searchQuery.toLowerCase();
+    const filteredProducts = products.products?.filter((product: Product) =>
+      product.title.toLowerCase().includes(query)
+    );
+
+    setCurrentPage(1);
+
+    dispatch({
+      type: UPDATE_FILTERED_PRODUCTS,
+      payload: filteredProducts,
+    });
+  };
+
+  useEffect(() => {
+    handleProductSearch()
+  }, [searchQuery])
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentProducts = products.filteredProducts?.slice(
@@ -95,6 +116,10 @@ const ProductList = () => {
 
   return (
     <>
+      <SearchBar
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
       <SortProducts />
       <FilterProducts />
       <div className="grid grid-cols-4 gap-4 p-4 mb-16">
