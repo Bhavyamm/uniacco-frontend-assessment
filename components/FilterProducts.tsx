@@ -7,6 +7,8 @@ import { UPDATE_FILTERED_PRODUCTS } from "@/actions/productActions";
 
 const FilterProducts = () => {
   const { products } = useAppSelector((state) => state);
+  const currentProducts = products.products as Product[];
+  const currentCategories = products.categories as string[];
   const dispatch = useAppDispatch();
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
@@ -19,9 +21,9 @@ const FilterProducts = () => {
     let filteredProducts: Product[];
 
     if (selectedCategory === "All" || selectedCategory === "") {
-      filteredProducts = products.products as Product[];
+      filteredProducts = currentProducts;
     } else {
-      filteredProducts = products.products?.filter(
+      filteredProducts = currentProducts?.filter(
         (product: Product) => product.category === selectedCategory
       );
     }
@@ -30,7 +32,7 @@ const FilterProducts = () => {
       type: UPDATE_FILTERED_PRODUCTS,
       payload: filteredProducts,
     });
-  }, [selectedCategory, products.products]);
+  }, [selectedCategory, currentProducts]);
 
   return (
     <div className="p-4 max-w-md mx-auto bg-white rounded-xl space-y-4">
@@ -46,7 +48,7 @@ const FilterProducts = () => {
         onChange={handleChange}
         className="block w-full p-2 border border-gray-300 rounded-md"
       >
-        {products.categories?.map((category: string) => (
+        {currentCategories?.map((category: string) => (
           <option key={category} value={category}>
             {category}
           </option>

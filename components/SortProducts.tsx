@@ -9,6 +9,7 @@ type SortOrder = "Ascending" | "Descending" | "Default"
 
 const SortProducts = () => {
   const { products } = useAppSelector((state) => state);
+  const currentFilteredProducts = products.filteredProducts as Product[];
   const dispatch = useAppDispatch();
   const [sortOrder, setSortOrder] = useState<SortOrder>("Default");
 
@@ -17,12 +18,12 @@ const SortProducts = () => {
   };
 
   useEffect(() => {
-    let sorted: Product[] = products.filteredProducts as Product[];
+    let sorted: Product[] = currentFilteredProducts;
 
     if (sortOrder === "Ascending") {
-      sorted = [...products.filteredProducts as Product[]].sort((a, b) => a.price - b.price);
+      sorted = [...currentFilteredProducts as Product[]].sort((a, b) => a.price - b.price);
     } else if (sortOrder === "Descending") {
-      sorted = [...products.filteredProducts as Product[]].sort((a, b) => b.price - a.price);
+      sorted = [...currentFilteredProducts as Product[]].sort((a, b) => b.price - a.price);
     }
 
     dispatch({

@@ -17,11 +17,13 @@ import SearchBar from "./SearchBar";
 
 const ProductList = () => {
   const { products } = useAppSelector((state) => state);
+  const currentFilteredProducts = products.filteredProducts as Product[]
+  const originalProducts = products.products as Product[];
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const totalPages = Math.ceil(
-    (products.filteredProducts?.length || 0) / itemsPerPage
+    (currentFilteredProducts?.length || 0) / itemsPerPage
   );
   const dispatch = useAppDispatch();
 
@@ -70,9 +72,9 @@ const ProductList = () => {
         ? { ...product, isFavourite: !product.isFavourite }
         : product;
 
-    const updatedProducts = products.products?.map(toggleFavourite) || [];
+    const updatedProducts = originalProducts?.map(toggleFavourite) || [];
     const updatedFilteredProducts =
-      products.filteredProducts?.map(toggleFavourite) || [];
+    currentFilteredProducts?.map(toggleFavourite) || [];
 
     dispatch({
       type: UPDATE_PRODUCTS,
@@ -91,7 +93,7 @@ const ProductList = () => {
 
   const handleProductSearch = () => {
     const query = searchQuery.toLowerCase();
-    const filteredProducts = products.products?.filter((product: Product) =>
+    const filteredProducts = originalProducts?.filter((product: Product) =>
       product.title.toLowerCase().includes(query)
     );
 
@@ -109,7 +111,7 @@ const ProductList = () => {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentProducts = products.filteredProducts?.slice(
+  const currentProducts = currentFilteredProducts?.slice(
     indexOfFirstItem,
     indexOfLastItem
   );
